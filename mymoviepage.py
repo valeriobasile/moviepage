@@ -2,19 +2,24 @@
 
 import imdb
 import re
-from os import listdir
-from os.path import isfile, join, getmtime
+from os import listdir, access, W_OK
+from os.path import isfile, isdir, dirname, abspath, join, getmtime
 import logging as log
+from optparse import OptionParser
+from sys import exit
 
-log.basicConfig(level=log.INFO)
+# globals
 ia = imdb.IMDb()
-
 file_ext = 'avi|divx|mkv|mpg|mp4|wmv|bin|ogm|vob|iso|img|bin|ts|rmvb|3gp|asf|flv|mov|movx|mpe|mpeg|mpg|mpv|ogg|ram|rm|wm|wmx|x264|xvid|dv'
 purge_words = 'divx|dvdscr|aac|dvdrip|brrip|UNRATED|WEBSCR|KLAXXON|xvid|r5|com--scOrp|300mbunited|1channel|3channel|bray|blueray|5channel|1GB|1080p|720p|480p|CD1|CD2|CD3|CD4|x264|x264-sUN|Special Edition|Sample|sample'
 
 def normalize_filename(movie_filename):
     file_ext_expr = "(?P<name>.*)\.({0})".format(file_ext)
-    movie_filename = re.match(file_ext_expr, movie_filename, re.I).group("name")
+    match = re.match(file_ext_expr, movie_filename, re.I)
+    if not match:
+        log.error('Cannot process filename {0}'.format(movie_filename))
+        return None
+    movie_filename = match.group('name')
 
     purge_words_list = "(?i)({0})(.*)$".format(purge_words)
     purge_digit = "(\d{4})(.*)$"
@@ -32,6 +37,9 @@ def normalize_filename(movie_filename):
 
 def get_movie_info(filename):
     filename_normalized = normalize_filename(filename)
+    if not(filename_normalized):
+        log.error('Could not normalize filename {0}'.format(filename))
+        return None
 
     # search IMDB
     result = ia.search_movie(filename_normalized)
@@ -113,28 +121,56 @@ def writehtmlpage(moviefiles, pagefile):
     writehtmlfooter(pagefile)
 
 # main
-# TODO: read this from a config file or command line parameters
-moviedir = 'movies'
-pagefile = 'moviepage.html'
+# parse command line options
+parser = OptionParser()
+parser.add_option('-d',
+                  '--moviedir',
+                  dest='moviedir',
+                  help='Movie file directory. Default: .',
+                  default='.')
+parser.add_option('-p',
+                  '--pagefile',
+                  dest='pagefile',
+                  help='HTML output file. Default: mymoviepage.html',
+                  default='mymoviepage.html')
+parser.add_option('-l',
+                  '--logfile',
+                  dest='logfile',
+                  help='log file. Default: mymoviepage.log',
+                  default='mymoviepage.log')
+
+(options, args) = parser.parse_args()
+
+if not isdir(options.moviedir):
+    log.error('{0} is not a valid directory, exiting.'.format(options.moviedir))
+    exit(1)
+if not access(dirname(abspath(options.pagefile)), W_OK):
+    log.error('{0} is not writable, exiting.'.format(dirname(options.pagefile)))
+    exit(1)
+if not access(dirname(abspath(options.logfile)), W_OK):
+    log.error('{0} is not writable, exiting.'.format(dirname(options.logfile)))
+    exit(1)
+
+log.basicConfig(filename=options.logfile, level=log.INFO)
 
 # read movie file listdir
-log.info('Reading file list from directory {0}'.format(moviedir))
-moviefiles = [f for f in listdir(moviedir) if isfile(join(moviedir, f))]
+log.info('Reading file list from directory {0}'.format(options.moviedir))
+moviefiles = [f for f in listdir(options.moviedir) if isfile(join(options.moviedir, f))]
 
 # check if there are new movie files
 try:
-    last_update_movies = max(map(lambda x: getmtime(join(moviedir, x)), moviefiles))
+    last_update_movies = max(map(lambda x: getmtime(join(options.moviedir, x)), moviefiles))
 except:
     last_update_movies = 0
 
 try:
-    last_update_pagefile = getmtime(pagefile)
+    last_update_pagefile = getmtime(options.pagefile)
 except:
     # HTML file does not exist or it is not writeable
     last_update_pagefile = 0
 
 if last_update_movies > last_update_pagefile:
-    log.info('Found new movies in directory {0}'.format(moviedir))
-    writehtmlpage(moviefiles, pagefile)
+    log.info('Found new movies in directory {0}'.format(options.moviedir))
+    writehtmlpage(moviefiles, options.pagefile)
 else:
     log.info('No movie found newer than the last update, nothing to do.')
