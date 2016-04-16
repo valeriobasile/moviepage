@@ -28,7 +28,7 @@ body {
   color: darkgreen;
 }
 
-.plot,.cast,.rating{
+.plot,.cast,.rating,.genre{
   display: block;
   font-family: 'Oxygen', sans-serif;
 }
@@ -49,6 +49,7 @@ body {
   text-decoration: underline;
 }
 
-.rating{
+.rating,.genre{
   color: gray;
+  font-size: small;
 }

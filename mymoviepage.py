@@ -70,6 +70,7 @@ def get_movie_info(filename):
         except:
             plot = 'No plot available.'
     rating = movie['rating']
+    genre = ', '.join(movie['genre'])
     movieID = movie.movieID
 
     return {'title': title,
@@ -77,6 +78,7 @@ def get_movie_info(filename):
             'cast': cast,
             'plot': plot,
             'year': year,
+            'genre': genre,
             'rating': rating,
             'movieID':movieID}
 
@@ -105,6 +107,7 @@ def writehtmlentry(pagefile, movieinfo):
         f.write(u'<div class="movie">\n')
         f.write(u'<h1><a href="http://www.imdb.com/title/tt{0}">{1}</a></h1>\n'.format(movieinfo['movieID'], movieinfo['title']).encode('utf-8'))
         f.write(u'<h2>by {0} ({1})</h2>\n'.format(u', '.join(map(personlink, movieinfo['directors'])), movieinfo['year']).encode('utf-8'))
+        f.write(u'<span class="genre">{0}</span>\n'.format(movieinfo['genre']).encode('utf-8'))
         f.write(u'<span class="plot">{0}</span>\n'.format(movieinfo['plot']).encode('utf-8'))
         f.write(u'<span class="cast">With {0}.</span>\n'.format(u', '.join(map(personlink, movieinfo['cast'][:4]))).encode('utf-8'))
         f.write(u'<span class="rating">IMDB Rating: {0}</span>\n'.format(movieinfo['rating']))
