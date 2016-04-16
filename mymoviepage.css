@@ -1,0 +1,54 @@
+a {
+  text-decoration: none;
+}
+
+body {
+  background-color: lightgray;
+}
+
+.movie{
+  margin-top:0.5em;
+  margin-bottom:0.5em;
+  margin-left:20%;
+  margin-right:20%;
+  padding:1em;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.movie h1,h2{
+  font-family: 'Arvo', serif;
+}
+
+.movie h1 a,h2 a{
+  color: green;
+}
+
+.movie h1,h2 a:visited {
+  color: darkgreen;
+}
+
+.plot,.cast,.rating{
+  display: block;
+  font-family: 'Oxygen', sans-serif;
+}
+
+.plot{
+  color: black;
+}
+
+.cast a{
+  color: green;
+}
+
+.cast a:visited{
+  color: darkgreen;
+}
+
+.cast a:hover{
+  text-decoration: underline;
+}
+
+.rating{
+  color: gray;
+}
