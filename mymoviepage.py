@@ -65,7 +65,10 @@ def get_movie_info(filename):
     title = movie['title']
     year = movie['year']
     directors = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['director'])
-    cast = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['cast'])
+    try:
+        cast = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['cast'])
+    except:
+        cast = 'No cast information available.'
     try:
         plot = movie['plot outline']
     except:
