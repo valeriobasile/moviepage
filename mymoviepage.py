@@ -15,6 +15,7 @@ file_ext = 'avi|divx|mkv|mpg|mp4|wmv|bin|ogm|vob|iso|img|bin|ts|rmvb|3gp|asf|flv
 purge_words = 'divx|dvdscr|aac|dvdrip|brrip|UNRATED|WEBSCR|KLAXXON|xvid|r5|com--scOrp|300mbunited|1channel|3channel|bray|blueray|5channel|1GB|1080p|720p|480p|CD1|CD2|CD3|CD4|x264|x264-sUN|Special Edition|Sample|sample'
 CSS_FILE = 'mymoviepage.css'
 JS_FILE = 'list.js'
+NOIMG = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/IMDb_logo.svg/200px-IMDb_logo.svg.png'
 
 def normalize_filename(movie_filename):
     file_ext_expr = "(?P<name>.*)\.({0})".format(file_ext)
@@ -75,7 +76,10 @@ def get_movie_info(filename):
     rating = movie['rating']
     genre = ', '.join(movie['genre'])
     movieID = movie.movieID
-    cover = movie['cover url']
+    try:
+        cover = movie['cover url']
+    except:
+        cover = NOIMG
 
     return {'title': title,
             'directors': directors,
