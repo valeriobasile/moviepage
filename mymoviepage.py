@@ -7,11 +7,13 @@ from os.path import isfile, isdir, dirname, abspath, join, getmtime
 import logging as log
 from optparse import OptionParser
 from sys import exit
+import shutil
 
 # globals
 ia = imdb.IMDb()
 file_ext = 'avi|divx|mkv|mpg|mp4|wmv|bin|ogm|vob|iso|img|bin|ts|rmvb|3gp|asf|flv|mov|movx|mpe|mpeg|mpg|mpv|ogg|ram|rm|wm|wmx|x264|xvid|dv|m4v'
 purge_words = 'divx|dvdscr|aac|dvdrip|brrip|UNRATED|WEBSCR|KLAXXON|xvid|r5|com--scOrp|300mbunited|1channel|3channel|bray|blueray|5channel|1GB|1080p|720p|480p|CD1|CD2|CD3|CD4|x264|x264-sUN|Special Edition|Sample|sample'
+CSS_FILE = 'mymoviepage.css'
 
 def normalize_filename(movie_filename):
     file_ext_expr = "(?P<name>.*)\.({0})".format(file_ext)
@@ -150,14 +152,16 @@ parser.add_option('-f',
 
 (options, args) = parser.parse_args()
 
+target_dir = dirname(abspath(options.pagefile))
+log_dir = dirname(abspath(options.logfile))
 if not isdir(options.moviedir):
     log.error('{0} is not a valid directory, exiting.'.format(options.moviedir))
     exit(1)
-if not access(dirname(abspath(options.pagefile)), W_OK):
-    log.error('{0} is not writable, exiting.'.format(dirname(options.pagefile)))
+if not access(target_dir, W_OK):
+    log.error('{0} is not writable, exiting.'.format(target_dir))
     exit(1)
-if not access(dirname(abspath(options.logfile)), W_OK):
-    log.error('{0} is not writable, exiting.'.format(dirname(options.logfile)))
+if not access(log_dir, W_OK):
+    log.error('{0} is not writable, exiting.'.format(log_dir))
     exit(1)
 
 log.basicConfig(filename=options.logfile,
@@ -180,8 +184,15 @@ except:
     # HTML file does not exist or it is not writeable
     last_update_pagefile = 0
 
+# generate HTML file
 if last_update_movies > last_update_pagefile or options.force:
     log.info('Found new movies in directory {0}'.format(options.moviedir))
     writehtmlpage(moviefiles, options.pagefile)
 else:
     log.info('No movie found newer than the last update, nothing to do.')
+
+# copy CSS file
+try:
+    shutil.copy(CSS_FILE, target_dir)
+except:
+    log.error('Cannot copy style file {0} in {1}.'.format(CSS_FILE, target_dir))
