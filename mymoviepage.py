@@ -68,7 +68,7 @@ def get_movie_info(filename):
     try:
         cast = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['cast'])
     except:
-        cast = 'No cast information available.'
+        cast = []
     try:
         plot = movie['plot outline']
     except:
@@ -126,7 +126,11 @@ def writehtmlfooter(pagefile):
 </html>""".format(JS_FILE).encode('utf-8'))
 
 def personlink(person):
-    return u'<a href="http://www.imdb.com/name/nm{0}">{1}</a>'.format(person['id'], person['name'])
+    try:
+        link =  u'<a href="http://www.imdb.com/name/nm{0}">{1}</a>'.format(person['id'], person['name'])
+    except:
+        link = u'{0}'.format(person['name'])
+    return link
 
 def writehtmlentry(pagefile, movieinfo):
     with open(pagefile, 'a') as f:
@@ -136,7 +140,8 @@ def writehtmlentry(pagefile, movieinfo):
         f.write(u'<h2>by {0} (<span class="year">{1}</span>)</h2>\n'.format(u', '.join(map(personlink, movieinfo['directors'])), movieinfo['year']).encode('utf-8'))
         f.write(u'<span class="genre">{0}</span>\n'.format(movieinfo['genre']).encode('utf-8'))
         f.write(u'<span class="plot">{0}</span>\n'.format(movieinfo['plot']).encode('utf-8'))
-        f.write(u'<span class="cast">With {0}.</span>\n'.format(u', '.join(map(personlink, movieinfo['cast'][:4]))).encode('utf-8'))
+        if len(movieinfo['cast'])>0:
+            f.write(u'<span class="cast">With {0}.</span>\n'.format(u', '.join(map(personlink, movieinfo['cast'][:4]))).encode('utf-8'))
         f.write(u'<span class="rating">IMDB Rating: {0}</span>\n'.format(movieinfo['rating']))
         f.write(u'</li>\n')
 
