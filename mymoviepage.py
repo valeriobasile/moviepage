@@ -64,7 +64,10 @@ def get_movie_info(filename):
 
     title = movie['title']
     year = movie['year']
-    directors = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['director'])
+    try:
+        directors = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['director'])
+    except:
+        directors = []
     try:
         cast = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['cast'])
     except:
@@ -137,7 +140,8 @@ def writehtmlentry(pagefile, movieinfo):
         f.write(u'<li class="movie">\n')
         f.write(u'<a href="http://www.imdb.com/title/tt{0}"><img class="cover"src="{1}" /></a>\n'.format(movieinfo['movieID'], movieinfo['cover']).encode('utf-8'))
         f.write(u'<h1 class="title"><a href="http://www.imdb.com/title/tt{0}">{1}</a></h1>\n'.format(movieinfo['movieID'], movieinfo['title']).encode('utf-8'))
-        f.write(u'<h2>by {0} (<span class="year">{1}</span>)</h2>\n'.format(u', '.join(map(personlink, movieinfo['directors'])), movieinfo['year']).encode('utf-8'))
+        if len(movieinfo['directors'])>0:
+            f.write(u'<h2>by {0} (<span class="year">{1}</span>)</h2>\n'.format(u', '.join(map(personlink, movieinfo['directors'])), movieinfo['year']).encode('utf-8'))
         f.write(u'<span class="genre">{0}</span>\n'.format(movieinfo['genre']).encode('utf-8'))
         f.write(u'<span class="plot">{0}</span>\n'.format(movieinfo['plot']).encode('utf-8'))
         if len(movieinfo['cast'])>0:
