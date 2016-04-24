@@ -79,7 +79,10 @@ def get_movie_info(filename):
             plot = movie['plot']
         except:
             plot = 'No plot available.'
-    rating = movie['rating']
+    try:
+        rating = movie['rating']
+    except:
+        rating = 'No rating found.'
     genre = ', '.join(movie['genre'])
     movieID = movie.movieID
     try:
