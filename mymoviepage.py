@@ -141,6 +141,12 @@ parser.add_option('-l',
                   dest='logfile',
                   help='log file. Default: mymoviepage.log',
                   default='mymoviepage.log')
+parser.add_option('-f',
+                  '--force',
+                  dest='force',
+                  action='store_true',
+                  help='Generate HTML regardless of timestampsself.',
+                  default=False)
 
 (options, args) = parser.parse_args()
 
@@ -172,7 +178,7 @@ except:
     # HTML file does not exist or it is not writeable
     last_update_pagefile = 0
 
-if last_update_movies > last_update_pagefile:
+if last_update_movies > last_update_pagefile or options.force:
     log.info('Found new movies in directory {0}'.format(options.moviedir))
     writehtmlpage(moviefiles, options.pagefile)
 else:
