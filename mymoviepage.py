@@ -160,7 +160,9 @@ if not access(dirname(abspath(options.logfile)), W_OK):
     log.error('{0} is not writable, exiting.'.format(dirname(options.logfile)))
     exit(1)
 
-log.basicConfig(filename=options.logfile, level=log.INFO)
+log.basicConfig(filename=options.logfile,
+                level=log.INFO,
+                format='%(asctime)s %(message)s')
 
 # read movie file listdir
 log.info('Reading file list from directory {0}'.format(options.moviedir))
