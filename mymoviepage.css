@@ -10,6 +10,13 @@ li.movie {
     list-style-type:none
 }
 
+img.cover {
+    width: 120px;
+    float:right;
+    border: none;
+    margin:0.5em;
+}
+
 .movie{
   margin-top:0.5em;
   margin-bottom:0.5em;

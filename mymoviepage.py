@@ -75,6 +75,7 @@ def get_movie_info(filename):
     rating = movie['rating']
     genre = ', '.join(movie['genre'])
     movieID = movie.movieID
+    cover = movie['cover url']
 
     return {'title': title,
             'directors': directors,
@@ -83,7 +84,9 @@ def get_movie_info(filename):
             'year': year,
             'genre': genre,
             'rating': rating,
-            'movieID':movieID}
+            'movieID':movieID,
+            'cover':cover,
+            }
 
 def writehtmlheader(pagefile):
     with open(pagefile, 'w') as f:
@@ -121,13 +124,13 @@ def personlink(person):
 def writehtmlentry(pagefile, movieinfo):
     with open(pagefile, 'a') as f:
         f.write(u'<li class="movie">\n')
+        f.write(u'<a href="http://www.imdb.com/title/tt{0}"><img class="cover"src="{1}" /></a>\n'.format(movieinfo['movieID'], movieinfo['cover']).encode('utf-8'))
         f.write(u'<h1 class="title"><a href="http://www.imdb.com/title/tt{0}">{1}</a></h1>\n'.format(movieinfo['movieID'], movieinfo['title']).encode('utf-8'))
         f.write(u'<h2>by {0} (<span class="year">{1}</span>)</h2>\n'.format(u', '.join(map(personlink, movieinfo['directors'])), movieinfo['year']).encode('utf-8'))
         f.write(u'<span class="genre">{0}</span>\n'.format(movieinfo['genre']).encode('utf-8'))
         f.write(u'<span class="plot">{0}</span>\n'.format(movieinfo['plot']).encode('utf-8'))
         f.write(u'<span class="cast">With {0}.</span>\n'.format(u', '.join(map(personlink, movieinfo['cast'][:4]))).encode('utf-8'))
         f.write(u'<span class="rating">IMDB Rating: {0}</span>\n'.format(movieinfo['rating']))
-        #f.write(u'<pre>{0}, {1}</pre>\n'.format(movieinfo['movieID'], movieinfo['directorID']))
         f.write(u'</li>\n')
 
 def writehtmlpage(moviefiles, pagefile):
@@ -210,4 +213,4 @@ for static_file in [CSS_FILE, JS_FILE]:
     try:
         shutil.copy(static_file, target_dir)
     except:
-        log.error('Cannot copy style file {0} in {1}.'.format(static_file, target_dir))
+        log.error('Cannot copy style file {0} in {1}'.format(static_file, target_dir))
