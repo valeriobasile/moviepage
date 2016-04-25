@@ -63,7 +63,10 @@ def get_movie_info(filename):
         return None
 
     title = movie['title']
-    year = movie['year']
+    try:
+        year = movie['year']
+    except:
+        year = '-'
     try:
         directors = map(lambda x: {'id': x.personID, 'name': unicode(x['name'])}, movie['director'])
     except:
