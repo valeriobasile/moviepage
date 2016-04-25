@@ -86,7 +86,10 @@ def get_movie_info(filename):
         rating = movie['rating']
     except:
         rating = 'No rating found.'
-    genre = ', '.join(movie['genre'])
+    try:
+        genre = ', '.join(movie['genre'])
+    except:
+        genre = ''
     movieID = movie.movieID
     try:
         cover = movie['cover url']
